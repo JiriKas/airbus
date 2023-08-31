@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Airbus IATA fixer</title>
+    <style>
+      a {
+        text-decoration: none;
+      }
+      .container {
+        background-color: rgb(213, 213, 213);
+        font-family: Arial, Helvetica, sans-serif;
+        margin: auto;
+        padding: 1rem;
+        width: 20rem;
+        display: flex;
+        flex-direction: column;
+        border-radius: 0.5rem;
+      }
+      #fileInput {
+        margin-bottom: 1rem;
+        height: 2rem;
+      }
+      .button {
+        background-color: rgb(35, 134, 173);
+        color: rgb(255, 255, 255);
+        border-radius: 0.3rem;
+        border: 1px solid rgb(84, 84, 84);
+        height: 2rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.9rem;
+      }
+      .button.a {
+        text-decoration: none;
+      }
+      .button:hover {
+        background-color: rgb(30, 123, 159);
+      }
+      .button:active {
+        background-color: rgb(26, 112, 146);
+      }
+      #downloadButton {
+        display: none;
+      }
+      #output {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container" class="container">
+      <h1 style="text-align: center">Airbus IATA fixer</h1>
+      <input type="file" id="fileInput" />
+      <button id="processButton" class="button">Konvertovat</button>
+      <p id="output"></p>
+
+      <div id="downloadButton" class="button">Stáhnout upravený soubor</div>
+    </div>
+    <script>
+      document
+        .getElementById('processButton')
+        .addEventListener('click', async () => {
+          const fileInput = document.getElementById('fileInput')
+          const message = document.getElementById('output')
+
+          try {
+            if (!fileInput.files[0]) {
+              message.textContent = 'Není vybrán žádný soubor'
+              return
+            } else {
+              message.textContent = 'Fixing ...'
+            }
+
+            const file = fileInput.files[0]
+            const outputFileName = file.name || 'output'
+
+            // read file content as string
+            const fileAsString = await file.text()
+
+            // replace empty IATA item with '@' and incremental suffix starting at 100
+            let suffix = 100
+
+            const editedContent = fileAsString.replace(/IATA=;/g, () => {
+              suffix++
+              return `IATA=@${suffix};`
+            })
+
+            // generate output file with edited empty IATA items
+            const outputFile = new Blob([editedContent], {
+              type: 'application/exec',
+            })
+
+            // generate download link
+            const url = URL.createObjectURL(outputFile)
+            const a = document.createElement('a')
+            a.id = 'outputLink'
+            a.href = url
+            a.download = outputFileName + '_fixed'
+            a.appendChild(document.getElementById('downloadButton'))
+
+            // generate download button
+            const outputLink = document.getElementById('outputLink')
+            if (outputLink) {
+              outputLink.remove()
+            }
+            document.getElementById('container').appendChild(a)
+            document.getElementById('downloadButton').style.display = 'flex'
+
+            message.textContent = ''
+          } catch (e) {
+            message.textContent = 'Nastala chyba ' + e
+          }
+        })
+    </script>
+  </body>
+</html>
