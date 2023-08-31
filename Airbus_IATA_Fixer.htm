@@ -12,6 +12,7 @@
         background-color: rgb(213, 213, 213);
         font-family: Arial, Helvetica, sans-serif;
         margin: auto;
+        margin-top: 3rem;
         padding: 1rem;
         width: 20rem;
         display: flex;
@@ -80,6 +81,13 @@
 
             // read file content as string
             const fileAsString = await file.text()
+
+            // file format dummy validation
+            if (!fileAsString.startsWith(`Version=1;`)) {
+              document.getElementById('downloadButton').style.display = 'none'
+              message.textContent = 'Formát souboru je naplatný'
+              return
+            }
 
             // replace empty IATA item with '@' and incremental suffix starting at 100
             let suffix = 100
