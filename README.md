@@ -1,6 +1,6 @@
 Airbus IATA fixer by Jiri Kasuba
 
-version: 1.0
+version: 1.1
 
 ## Usage
 
