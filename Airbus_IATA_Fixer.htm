@@ -89,12 +89,21 @@
               return
             }
 
-            // replace empty IATA item with '@' and incremental suffix starting at 100
-            let suffix = 100
+            // generate array of pairs of two letters (AA, AB, AC, ...)
+            const arrayOfPairs = []
+            for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
+              for (let j = 'A'.charCodeAt(0); j <= 'Z'.charCodeAt(0); j++) {
+                let pairOfLetters =
+                  String.fromCharCode(i) + String.fromCharCode(j)
+                arrayOfPairs.push(pairOfLetters)
+              }
+            }
 
+            // replace empty IATA item with '@' and pair of two letters (AA, AB, AC, ...)
+            let suffix = -1
             const editedContent = fileAsString.replace(/IATA=;/g, () => {
               suffix++
-              return `IATA=@${suffix};`
+              return `IATA=@${arrayOfPairs[suffix]};`
             })
 
             // generate output file with edited empty IATA items
